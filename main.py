@@ -1,0 +1,39 @@
+#!/usr/bin/env python3
+"""Write the entry text to entry.txt.
+
+Entry for make.fun's "Describe Your Ex in One Word": Nonrefundable.
+Candidates compared: 'Lesson' (a plain cliche verdict), 'Expensive' (a
+plain cost insult), and 'Nonrefundable' (selected: one correctly spelled
+word with a twist - the time is spent and none of it comes back, a verdict
+anyone who has had an ex recognises instantly, with no caption needed).
+Deterministic: a fixed text, no network, no randomness, no clock.
+"""
+import os
+from pathlib import Path
+
+LINE = "Nonrefundable"
+TEXT = LINE + "\n"
+MAX_CHARS = 111
+
+
+def validate(text: str) -> None:
+    body = text[:-1] if text.endswith("\n") else text
+    if not (1 <= len(body) <= MAX_CHARS):
+        raise ValueError("entry length out of range")
+    if not body.strip():
+        raise ValueError("entry must not be only whitespace")
+    if len(body.split()) != 1:
+        raise ValueError("entry must be exactly one word")
+    if "\n" in body or "\r" in body:
+        raise ValueError("entry must be a single line")
+
+
+def main() -> None:
+    validate(TEXT)
+    out_dir = Path(os.environ.get("MAKEFUN_OUTPUT_DIR") or "/output")
+    out_dir.mkdir(parents=True, exist_ok=True)
+    (out_dir / "entry.txt").write_bytes(TEXT.encode("utf-8"))
+
+
+if __name__ == "__main__":
+    main()
